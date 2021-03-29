@@ -1,0 +1,7 @@
+stages:
+    load_data: 
+        cmd: python src/main_process.py --config=params.yaml
+        deps:
+        - data_given/winequality.csv
+        outs:
+        - data/raw/winequality.csv
