@@ -1,10 +1,19 @@
 load_data:
-  cmd: python src/main_process.py --config=params.yaml
+  cmd: python src/load_and_split.py --config=params.yaml
   deps:
   - path: data_given/winequality.csv
     md5: ccc8d3507eb151f53f760d36abdef888
     size: 91998
+  - path: src/load_and_split.py
+    md5: 61c0794f5a8c55ab7558c84751146ed5
+    size: 1559
   outs:
+  - path: data/processed/test_winequality.csv
+    md5: ac6de14c1b8fa38acbbdaeffc6b92abb
+    size: 29013
+  - path: data/processed/train_winequality.csv
+    md5: 669cb2c29fed7217daa1b42173d1a410
+    size: 67754
   - path: data/raw/winequality.csv
     md5: dcb9f7736a81b73cf4cf803b5ef3f07e
     size: 102550
