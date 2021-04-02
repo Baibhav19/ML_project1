@@ -14,7 +14,9 @@ import argparse
 import joblib
 import json
 import yaml
-
+'''Class to train and evaluate.
+Also write metrics to JSON file.
+'''
 class train_and_evaluate:
 
 	def eval_metrics(self, actual, pred):
