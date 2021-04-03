@@ -8,7 +8,10 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import ElasticNet
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
 #from get_data import read_params
 import argparse
 import joblib
@@ -32,31 +35,42 @@ class train_and_evaluate:
 		random_state = config["base"]["random_state"]
 		model_dir = config["model_dir"]
 
-		alpha = config["estimators"]["ElasticNet"]["params"]["alpha"]
-		l1_ratio = config["estimators"]["ElasticNet"]["params"]["l1_ratio"]
+		
 
 		target = [config["base"]["target_col"]]
 		print("target")
 		train = pd.read_csv(train_data_path, sep=",")
 		test = pd.read_csv(test_data_path, sep=",")
 
-		train_y = train[target]
-		test_y = test[target]
+		y_train = train[target]
+		y_test = test[target]
 
-		train_x = train.drop(target, axis=1)
-		test_x = test.drop(target, axis=1)
-
-		lr = ElasticNet(
-			alpha=alpha, 
-			l1_ratio=l1_ratio, 
-			random_state=random_state)
-		lr.fit(train_x, train_y)
-
-		predicted_qualities = lr.predict(test_x)
+		X_train = train.drop(target, axis=1)
+		X_test = test.drop(target, axis=1)
 		
-		(rmse, mae, r2) = self.eval_metrics(test_y, predicted_qualities)
+		sc = StandardScaler()
+		sc.fit(X_train)
+		X_train_scaled = sc.transform(X_train)
+		X_test_scaled = sc.transform(X_test)
+		
+		pipe = Pipeline([
+			('sc', StandardScaler()),
+			('rf', RandomForestRegressor(random_state=42))
+		])
+		
+		parameters = {
+			'rf__n_estimators':[80,90,100]
+		}
+		
+		gcv = GridSearchCV(pipe, parameters, cv=4, verbose=1)
+		
+		gcv.fit(X_train, y_train.values)
+		
+		predicted_qualities = gcv.predict(X_test)
+		
+		(rmse, mae, r2) = self.eval_metrics(y_test.values, predicted_qualities)
 
-		print("Elasticnet model (alpha=%f, l1_ratio=%f):" % (alpha, l1_ratio))
+		#print("Elasticnet model (alpha=%f, l1_ratio=%f):" % (alpha, l1_ratio))
 		print("  RMSE: %s" % rmse)
 		print("  MAE: %s" % mae)
 		print("  R2: %s" % r2)
@@ -73,19 +87,14 @@ class train_and_evaluate:
 			}
 			json.dump(scores, f, indent=4)
 
-		with open(params_file, "w") as f:
-			params = {
-				"alpha": alpha,
-				"l1_ratio": l1_ratio,
-			}
-			json.dump(params, f, indent=4)
+		
 	#####################################################
 
 
 		os.makedirs(model_dir, exist_ok=True)
 		model_path = os.path.join(model_dir, "model.joblib")
 
-		joblib.dump(lr, model_path)
+		joblib.dump(gcv, model_path)
 		
 	def __init__(self):
 		self.raw_data = dict()

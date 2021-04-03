@@ -27,19 +27,16 @@ train_and_evaluate:
     md5: 669cb2c29fed7217daa1b42173d1a410
     size: 67754
   - path: src/train_and_evaluate.py
-    md5: 6d5192d71b121552393e38d9c24c4c57
-    size: 2723
+    md5: 5209434f9c94cd3403a8a7c55cb2d229
+    size: 2887
   params:
     params.yaml:
       estimators.ElasticNet.params.alpha: 0.89
       estimators.ElasticNet.params.l1_ratio: 0.3
   outs:
-  - path: report/params.json
-    md5: 6c3cce84b17f347c991f18f3cbc27059
-    size: 45
   - path: report/scores.json
-    md5: 2a2b1b6171f62c4f945bd08166730721
-    size: 100
+    md5: 08922d79a217a0a2cad88bd5c1d6e3d7
+    size: 101
   - path: saved_models/model.joblib
-    md5: 3ff6ed41ad6cc54a8128bf2a41e70316
-    size: 730
+    md5: 75315497034c67399d20de9859d4ebcd
+    size: 2686959
