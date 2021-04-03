@@ -41,12 +41,13 @@ class train_and_evaluate:
 		print("target")
 		train = pd.read_csv(train_data_path, sep=",")
 		test = pd.read_csv(test_data_path, sep=",")
-
+		columns = config["columns"]
+		print(columns)
 		y_train = train[target]
 		y_test = test[target]
 
-		X_train = train.drop(target, axis=1)
-		X_test = test.drop(target, axis=1)
+		X_train = train[columns]
+		X_test = test[columns]
 		
 		sc = StandardScaler()
 		sc.fit(X_train)

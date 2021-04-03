@@ -2,25 +2,42 @@ base:
   project: winequality-project
   random_state: 42
   target_col: TARGET
+  
+schema: schema/schema.json
 
 data_source:
   s3_source: data_given/winequality.csv
 
 load_data:
   raw_dataset_csv: data/raw/winequality.csv
+  
+test_data:
+    test_data_csv: tests/test_data.csv
+    test_results: tests/test_result.csv
+    
+pytest_data: 
+    incorrect_range: test_data.csv
+    test_results: test_result.csv
 
 split_data:
   train_path: data/processed/train_winequality.csv
   test_path: data/processed/test_winequality.csv
   test_size: 0.3
 
+columns: 
+    - alcohol
+    - sulphates
+    - total_sulfur_dioxide
+    - volatile_acidity
+
 estimators:
   ElasticNet:
     params:
-        #alpha: 0.9
-        #l1_ratio: 0.4
         alpha: 0.89
         l1_ratio: 0.3
+  RandomForestRegressor:
+    params:
+        n_estimators: 100
 model_dir: saved_models
 
 reports:
